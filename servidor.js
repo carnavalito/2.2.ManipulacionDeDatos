@@ -10,7 +10,6 @@ app.use(cors());
 let sqlite3 = require('sqlite3');
 
 
-
 function createDatabase() {
     console.log("Creando la BD");
     let db = new sqlite3.Database('./videojuego.db', (err) => {
@@ -44,6 +43,17 @@ app.get('/listaVideojuegos', function (req, res) {
         });
 })
 
+app.get('/videojuego/:id', function (req, res) {
+    const _id = req.params.id;
+
+    let db = new sqlite3.Database('./videojuego.db');
+    let resultado = db.all(`SELECT * FROM videojuego WHERE id = ?;`, [_id], function (err, row) {
+        let videojuego = JSON.stringify(row);
+        res.end(videojuego);
+    });
+
+})
+
 app.post('/agregarVideojuego', function (req, res) {
     const _nombre = req.body.nombre;
     const _genero = req.body.genero;
@@ -54,8 +64,8 @@ app.post('/agregarVideojuego', function (req, res) {
     res.end('OK');
 })
 
-app.post('/actualizarVideojuego', function (req, res) {
-    const _id = req.body.id;
+app.put('/actualizarVideojuego/:id', function (req, res) {
+    const _id = req.params.id;
     const _nombre = req.body.nombre;
     const _genero = req.body.genero;
     const _lanzamiento = req.body.lanzamiento;
@@ -68,6 +78,7 @@ app.post('/actualizarVideojuego', function (req, res) {
 })
 
 app.delete('/borrarVideojuego', function (req, res) {
+
     const _id = req.body.id;
 
     let db = new sqlite3.Database('./videojuego.db');
@@ -96,3 +107,4 @@ var server = app.listen(8080, function () {
     console.log("Servidor escuchando en http://localhost:%s", port);
 
 })
+
